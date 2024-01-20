@@ -1,5 +1,7 @@
 import streamlit as st
 from features.generate.main import generate_content
+from features.classify.main import classify_content
+from features.summarize.main import summarize_content
 
 # Using "with" notation
 with st.sidebar:
@@ -47,10 +49,63 @@ if webpage == "Generate":
 
 elif webpage == "Classify":
     st.title("Classify")
-    tab1, tab2 = st.tabs(["Example", "Custom"])
+    st.text("Sentiment Analysis Classification {Positve, Negative, Neurtral}")
 
-    with tab1:
-        st.header("Hello..")
+    model = st.selectbox(
+        "Which model would you like to use?",
+        ("embed-english-v2.0", "embed-multilingual-v2.0", "embed-english-light-v2.0"),
+        help="https://docs.cohere.com/reference/classify",
+    )
 
-    with tab2:
-        st.header("Example...")
+    text = st.text_input("Enter the text to classify", max_chars=50)
+    input = []
+    input.append(text)
+
+    if st.button("Submit", type="primary") and cohere_api_key:
+        answer = classify_content(cohere_api_key, input, model)
+        st.success("Successful generation", icon="✅")
+        st.text(answer)
+    elif not cohere_api_key:
+        st.error("Please provide API key", icon="❌")
+
+elif webpage == "Summarize":
+    st.title("Summarize")
+    st.text("")
+
+    model = st.selectbox(
+        "Which model would you like to use?",
+        ("command-light", "command", "command-nightly", "command-light-nightly"),
+        help="https://docs.cohere.com/reference/summarize-2",
+    )
+
+    format = st.selectbox(
+        "How do you want the model to draft the summary?",
+        ("auto", "bullets", "paragraph"),
+        help="https://docs.cohere.com/reference/summarize-2",
+    )
+
+    extractiveness = st.selectbox(
+        "How do you want the model to paraphrase?",
+        ("auto", "low", "medium", "high"),
+        help="https://docs.cohere.com/reference/summarize-2",
+    )
+
+    temperature = st.slider(
+        "Model temperature to operate at (Optimal range 0-1)", 0.0, 5.0, 0.1
+    )
+
+    input = st.text_area(
+        "Paste the passage in (English)",
+        max_chars=1500,
+    )
+
+    if st.button("Submit", type="primary") and cohere_api_key:
+        answer = summarize_content(
+            cohere_api_key, input, model, extractiveness, format, temperature
+        )
+        st.success("Successful generation", icon="✅")
+        st.markdown(answer)
+    elif len(input) < 250:
+        st.error("Length of the passage must be atleast 250 words", icon="❌")
+    elif not cohere_api_key:
+        st.error("Please provide API key", icon="❌")
