@@ -2,6 +2,7 @@ import streamlit as st
 from features.generate.main import generate_content
 from features.classify.main import classify_content
 from features.summarize.main import summarize_content
+from features.detect.main import detect_language
 
 # Using "with" notation
 with st.sidebar:
@@ -70,7 +71,6 @@ elif webpage == "Classify":
 
 elif webpage == "Summarize":
     st.title("Summarize")
-    st.text("")
 
     model = st.selectbox(
         "Which model would you like to use?",
@@ -107,5 +107,22 @@ elif webpage == "Summarize":
         st.markdown(answer)
     elif len(input) < 250:
         st.error("Length of the passage must be atleast 250 words", icon="❌")
+    elif not cohere_api_key:
+        st.error("Please provide API key", icon="❌")
+
+elif webpage == "Detect Language":
+    st.title("Detect Language")
+    st.markdown(
+        "This works on the fact that input if input is detected as English, it is routed to the English Model, else it is routed to Multilingual Embed Model."
+    )
+
+    text = st.text_input("Enter the text to detext language", max_chars=50)
+    input = []
+    input.append(text)
+
+    if st.button("Submit", type="primary") and cohere_api_key and text:
+        answer = detect_language(cohere_api_key, input)
+        st.success("Successful generation", icon="✅")
+        st.markdown("Detected language: " + answer)
     elif not cohere_api_key:
         st.error("Please provide API key", icon="❌")
