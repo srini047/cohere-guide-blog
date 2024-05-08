@@ -1,32 +1,32 @@
 import streamlit as st
 import cohere
-from cohere.responses.classify import Example
+from cohere import ClassifyExample
 
 
 @st.cache_data
-def classify_content(key, input, model):
+def classify_content(key, inputs):
     co = cohere.Client(key)
     examples = [
-        Example("I'm so proud of you", "positive"),
-        Example("What a great time to be alive", "positive"),
-        Example("That's awesome work", "positive"),
-        Example("The service was amazing", "positive"),
-        Example("I love my family", "positive"),
-        Example("They don't care about me", "negative"),
-        Example("I hate this place", "negative"),
-        Example("The most ridiculous thing I've ever heard", "negative"),
-        Example("I am really frustrated", "negative"),
-        Example("This is so unfair", "negative"),
-        Example("This made me think", "neutral"),
-        Example("The good old days", "neutral"),
-        Example("What's the difference", "neutral"),
-        Example("You can't ignore this", "neutral"),
-        Example("That's how I see it", "neutral"),
+        ClassifyExample(text="I'm so proud of you", label="positive"),
+        ClassifyExample(text="What a great time to be alive", label="positive"),
+        ClassifyExample(text="That's awesome work", label="positive"),
+        ClassifyExample(text="The service was amazing", label="positive"),
+        ClassifyExample(text="I love my family", label="positive"),
+        ClassifyExample(text="They don't care about me", label="negative"),
+        ClassifyExample(text="I hate this place", label="negative"),
+        ClassifyExample(text="The most ridiculous thing I've ever heard", label="negative"),
+        ClassifyExample(text="I am really frustrated", label="negative"),
+        ClassifyExample(text="This is so unfair", label="negative"),
+        ClassifyExample(text="This made me think", label="neutral"),
+        ClassifyExample(text="The good old days", label="neutral"),
+        ClassifyExample(text="What's the difference", label="neutral"),
+        ClassifyExample(text="You can't ignore this", label="neutral"),
+        ClassifyExample(text="That's how I see it", label="neutral"),
     ]
 
-    classifications = co.classify(model=model, inputs=input, examples=examples)
+    classifications = co.classify(inputs=inputs, examples=examples)
 
     return (
         "Provided sentence is: "
-        + ("".join(classifications[0].predictions)).capitalize()
+        + classifications.classifications[0].prediction.capitalize()
     )
