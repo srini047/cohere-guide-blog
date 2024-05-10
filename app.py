@@ -2,8 +2,9 @@ import streamlit as st
 from features.generate.main import generate_content
 from features.classify.main import classify_content
 from features.summarize.main import summarize_content
-# from features.detect.main import detect_language
 from features.embed.main import embed_content
+
+# from features.detect.main import detect_language
 
 # Using "with" notation
 with st.sidebar:
@@ -23,7 +24,7 @@ if webpage == "Generate":
     st.title("Genereate")
     st.text(
         "Paste your question to generate generic content on all topics",
-        help="https://docs.cohere.com/docs/command-beta",
+        help="https://docs.cohere.com/docs/migrating-from-cogenerate-to-cochat",
     )
     model = st.selectbox(
         "Which model would you like to use?",
@@ -95,10 +96,7 @@ elif webpage == "Summarize":
         "Model temperature to operate at (Optimal range 0-1)", 0.0, 5.0, 0.1
     )
 
-    input = st.text_area(
-        "Paste the passage in (English)",
-        max_chars=1500,
-    )
+    input = st.text_area("Paste the passage in (English)", max_chars=1500)
 
     if st.button("Submit", type="primary") and cohere_api_key:
         answer = summarize_content(
@@ -112,7 +110,7 @@ elif webpage == "Summarize":
         st.error("Please provide API key", icon="❌")
 
 elif webpage == "Embeddings":
-    st.title("Embed Text")
+    st.title("Embed Text", help="https://docs.cohere.com/reference/embed")
 
     input = st.text_area(
         "Paste the passage in (English)",
