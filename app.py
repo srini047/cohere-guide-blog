@@ -3,6 +3,7 @@ from features.generate.main import generate_content
 from features.classify.main import classify_content
 from features.summarize.main import summarize_content
 from features.embed.main import embed_content
+from features.rerank.main import rerank_documents
 
 # from features.detect.main import detect_language
 
@@ -17,7 +18,7 @@ with st.sidebar:
     )
     webpage = st.radio(
         "Available Features",
-        ("Classify", "Embeddings", "Generate", "Summarize"),
+        ("Classify", "Embeddings", "Generate", "Rerank", "Summarize"),
     )
 
 if webpage == "Generate":
@@ -116,6 +117,11 @@ elif webpage == "Embeddings":
         "Paste the passage in (English)",
         max_chars=50,
     )
+    model = st.selectbox(
+        "Which model would you like to use?",
+        ("command-light", "command", "command-nightly", "command-light-nightly"),
+        help="https://docs.cohere.com/docs/command-beta#:~:text=Command%20is%20Cohere%27s,nightly%20to%20improve.",
+    )
 
     if st.button("Submit", type="primary") and cohere_api_key:
         answer = embed_content(cohere_api_key, input)
@@ -141,3 +147,28 @@ elif webpage == "Embeddings":
 #         st.markdown("Detected language: " + answer)
 #     elif not cohere_api_key:
 #         st.error("Please provide API key", icon="❌")
+
+elif webpage == "Rerank":
+    st.title("Rerank Documents", help="https://docs.cohere.com/reference/rerank")
+
+    docs = st.text_area(
+        "Paste the text/paragraph to rerank",
+        max_chars=250,
+    )
+    model = st.selectbox(
+        "Which model would you like to use?",
+        (
+            "rerank-english-v3.0",
+            "rerank-multilingual-v3.0",
+            "rerank-english-v2.0",
+            "rerank-multilingual-v2.0",
+        ),
+    )
+    input = st.text_input("Enter your prompt", max_chars=50)
+
+    if st.button("Submit", type="primary") and cohere_api_key:
+        answer = rerank_documents(cohere_api_key, docs, model, input)
+        st.success("Successful generation", icon="✅")
+        st.markdown(answer)
+    elif not cohere_api_key:
+        st.error("Please provide API key", icon="❌")
